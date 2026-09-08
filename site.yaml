@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: personal-site
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: site-html
+  namespace: personal-site
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Developer Portfolio</title>
+      <style>
+        :root { --bg: #f8f9fa; --text: #212529; --accent: #0066cc; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); max-width: 750px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; }
+        nav { display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid #ddd; padding-bottom: 1rem; }
+        nav a { color: var(--accent); text-decoration: none; font-weight: 600; }
+        section { display: none; }
+        section:target, section:first-of-type { display: block; }
+        .project-card, .blog-card { border: 1px solid #e0e0e0; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; background: #fff; }
+      </style>
+    </head>
+    <body>
+      <nav>
+        <a href="#about">About</a>
+        <a href="#blog">Blog</a>
+        <a href="#projects">Projects</a>
+      </nav>
+
+      <section id="about">
+        <h1>About</h1>
+        <p>DevOps & Cloud-Native Engineer focused on Kubernetes systems, distributed architecture, and Go development.</p>
+      </section>
+
+      <section id="blog">
+        <h1>Blog</h1>
+        <article class="blog-card">
+          <h3>Building Lightweight Kubernetes Infrastructure</h3>
+          <small>September 2026</small>
+          <p>Notes on running production-like GitOps workflows on strict resource constraints.</p>
+        </article>
+      </section>
+
+      <section id="projects">
+        <h1>Projects</h1>
+        <div class="project-card">
+          <h3>S3-Compatible Object Store</h3>
+          <p>A multi-service object storage system written in Go featuring custom API routing and metadata handling.</p>
+        </div>
+      </section>
+    </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: site-deployment
+  namespace: personal-site
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: personal-site
+  template:
+    metadata:
+      labels:
+        app: personal-site
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.25-alpine
+        resources:
+          requests:
+            cpu: 5m
+            memory: 12Mi
+          limits:
+            cpu: 50m
+            memory: 24Mi
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html-volume
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html-volume
+        configMap:
+          name: site-html
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: site-service
+  namespace: personal-site
+spec:
+  selector:
+    app: personal-site
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
