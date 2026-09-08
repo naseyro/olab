@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: site-deployment
+  namespace: personal-site
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: personal-site
+  template:
+    metadata:
+      labels:
+        app: personal-site
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: site
+        image: ghcr.io/naseyro/olab:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 5m
+            memory: 10Mi
+          limits:
+            cpu: 50m
+            memory: 20Mi
