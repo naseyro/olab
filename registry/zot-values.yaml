@@ -1,0 +1,76 @@
+# registry/zot-values.yaml
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/project-zot/zot
+  tag: "v2.1.18"
+
+service:
+  type: ClusterIP
+  port: 5000
+
+persistence: true
+
+pvc:
+  create: true
+  accessModes:
+    - ReadWriteOnce
+  storage: 10Gi
+  storageClassName: local-path
+
+strategy:
+  type: Recreate
+
+mountConfig: true
+
+configFiles:
+  config.json: |-
+    {
+      "distSpecVersion": "1.0.1",
+      "storage": {
+        "rootDirectory": "/var/lib/registry"
+      },
+      "http": {
+        "address": "0.0.0.0",
+        "port": "5000",
+        "readTimeout": "60s",
+        "writeTimeout": "600s",
+        "auth": {
+          "htpasswd": {
+            "path": "/secret/htpasswd"
+          }
+        },
+        "accessControl": {
+          "repositories": {
+            "olab": {
+              "policies": [
+                {
+                  "users": ["ci"],
+                  "actions": ["read", "create"]
+                },
+                {
+                  "users": ["pull"],
+                  "actions": ["read"]
+                }
+              ],
+              "defaultPolicy": []
+            },
+            "**": {
+              "defaultPolicy": []
+            }
+          },
+          "adminPolicy": {
+            "users": ["admin"],
+            "actions": ["read", "create", "update", "delete"]
+          }
+        }
+      },
+      "log": {
+        "level": "info"
+      }
+    }
+
+externalSecrets:
+  - secretName: zot-auth
+    mountPath: /secret
