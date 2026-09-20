@@ -43,11 +43,11 @@ configFiles:
         },
         "accessControl": {
           "repositories": {
-            "olab": {
+            "**": {
               "policies": [
                 {
                   "users": ["ci"],
-                  "actions": ["read", "create"]
+                  "actions": ["read", "create", "update"]
                 },
                 {
                   "users": ["pull"],
@@ -56,9 +56,6 @@ configFiles:
               ],
               "defaultPolicy": []
             },
-            "**": {
-              "defaultPolicy": []
-            }
           },
           "adminPolicy": {
             "users": ["admin"],
