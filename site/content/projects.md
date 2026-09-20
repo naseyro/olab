@@ -4,8 +4,7 @@ title: "Projects"
 
 # Projects
 
-### S3-Compatible Object Store
-A multi-service object storage server built in Go featuring custom API routing, bucket metadata handling, and Docker Compose orchestration.
-
-### Kubernetes Custom Logger Controller
-A custom resource controller and HTTPS validating admission webhook built from scratch using `client-go` to demonstrate controller reconciliation logic and TLS cert management.
+### [Sekrets / SecretsManager](https://github.com/naseyro/sekrets)
+A Kubernetes controller built with pure client-go that automatically injects secrets into workloads and triggers immediate rollouts when secret values change.
+### [ms3](https://github.com/ms3-system/ms3)
+Simple object storage system in Go, featuring an API gateway that routes REST and gRPC traffic across dedicated metadata, and data storage microservices. The project is orchestrated on Kubernetes and deployed using a modern GitOps CI/CD pipeline powered by Prow, Kustomize, and Argo CD.
