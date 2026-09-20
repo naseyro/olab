@@ -17,7 +17,7 @@ spec:
       - name: ghcr-secret
       containers:
       - name: site
-        image: ghcr.io/naseyro/site:0.1.0
+        image: ghcr.io/naseyro/site:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 80
