@@ -14,10 +14,10 @@ spec:
         app: personal-site
     spec:
       imagePullSecrets:
-      - name: ghcr-secret
+      - name: zot-credentials
       containers:
       - name: site
-        image: ghcr.io/naseyro/site:latest
+        image: registry.naseyro.com/site:v0.1.0
         imagePullPolicy: Always
         ports:
         - containerPort: 80
