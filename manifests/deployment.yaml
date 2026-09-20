@@ -4,7 +4,7 @@ metadata:
   name: site-deployment
   namespace: personal-site
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: personal-site
@@ -17,7 +17,7 @@ spec:
       - name: ghcr-secret
       containers:
       - name: site
-        image: ghcr.io/naseyro/olab:latest
+        image: ghcr.io/naseyro/site:0.1.0
         imagePullPolicy: Always
         ports:
         - containerPort: 80

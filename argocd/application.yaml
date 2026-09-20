@@ -3,15 +3,11 @@ kind: Application
 metadata:
   name: personal-site
   namespace: argocd
-  annotations:
-    argocd-image-updater.argoproj.io/image-list: site=ghcr.io/naseyro/olab
-    argocd-image-updater.argoproj.io/site.update-strategy: digest
-    argocd-image-updater.argoproj.io/site.pull-secret: pullsecret:argocd/ghcr-pull-secret
 spec:
   project: default
   source:
     repoURL: 'https://github.com/naseyro/olab.git'
-    targetRevision: HEAD
+    targetRevision: main
     path: 'manifests'
   destination:
     server: 'https://kubernetes.default.svc'
