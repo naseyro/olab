@@ -1,0 +1,37 @@
+name: Flux Image Update PR
+
+on:
+  push:
+    branches:
+      - flux-image-updates
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create PR to update the site version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh pr list \
+              --repo "$GITHUB_REPOSITORY" \
+              --head "flux-image-updates" \
+              --base "master" \
+              --state open \
+              --json number \
+              --jq 'length' | grep -q '^0$'; then
+
+            gh pr create \
+              --repo "$GITHUB_REPOSITORY" \
+              --base master \
+              --head flux-image-updates \
+              --title "chore: update the site version to latest version" \
+              --body "Flux Image Automation updated the personal-site image reference to the latest version found at https://registry.naseyro.com."
+          else
+            echo "Deployment PR already exists."
+          fi

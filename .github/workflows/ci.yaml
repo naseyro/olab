@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and test site
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          load: true
+          platforms: linux/amd64
+          tags: site:pr-${{ github.sha }}
+
+      - name: Start container
+        run: |
+          docker run \
+            --detach \
+            --name olab-test \
+            --publish 18080:80 \
+            site:pr-${{ github.sha }}
+
+      - name: Wait for site
+        run: |
+          for i in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:18080/ > /dev/null; then
+              echo "Site is responding."
+              exit 0
+            fi
+
+            sleep 2
+          done
+
+          echo "Site did not become ready."
+          docker logs olab-test
+          exit 1
+
+      - name: Test site
+        run: |
+          curl --fail http://127.0.0.1:18080/
+          curl --fail http://127.0.0.1:18080/posts/
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker rm --force olab-test

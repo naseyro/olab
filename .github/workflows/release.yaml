@@ -1,0 +1,102 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'release-*'
+
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag, e.g. release-v0.2.1'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Build and publish release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve release tag
+        id: release
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            RELEASE_REF="${{ inputs.release_tag }}"
+          else
+            RELEASE_REF="$GITHUB_REF_NAME"
+          fi
+
+          if [[ ! "$RELEASE_REF" =~ ^release-v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid release tag: $RELEASE_REF"
+            echo "Expected format: release-vX.Y.Z"
+            exit 1
+          fi
+
+          RELEASE_VERSION="${RELEASE_REF#release-}"
+
+          echo "ref=$RELEASE_REF" >> "$GITHUB_OUTPUT"
+          echo "version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout release
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.release.outputs.ref }}
+          fetch-depth: 0
+
+      - name: Build release image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          load: true
+          platforms: linux/amd64
+          tags: registry.naseyro.com/site:${{ steps.release.outputs.version }}
+
+      - name: Start release container
+        run: |
+          docker run \
+            --detach \
+            --name site-release-test \
+            --publish 18080:80 \
+            registry.naseyro.com/site:${{ steps.release.outputs.version }}
+
+      - name: Wait for release image
+        run: |
+          for i in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:18080/ > /dev/null; then
+              echo "Release image is responding."
+              exit 0
+            fi
+
+            sleep 2
+          done
+
+          echo "Release image did not become ready."
+          docker logs site-release-test
+          exit 1
+
+      - name: Test release image
+        run: |
+          curl --fail http://127.0.0.1:18080/
+          curl --fail http://127.0.0.1:18080/posts/
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker rm --force site-release-test
+
+      - name: Log in to Zot
+        uses: docker/login-action@v4
+        with:
+          registry: registry.naseyro.com
+          username: ${{ secrets.REGISTRY_CI_USERNAME }}
+          password: ${{ secrets.REGISTRY_CI_PASSWORD }}
+
+      - name: Push release image
+        run: |
+          docker push \
+            registry.naseyro.com/site:${{ steps.release.outputs.version }}

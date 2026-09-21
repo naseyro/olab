@@ -1,0 +1,34 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageUpdateAutomation
+metadata:
+  name: olab
+  namespace: flux-system
+spec:
+  interval: 1m
+
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+
+  git:
+    checkout:
+      ref:
+        branch: master
+
+    push:
+      branch: flux-image-updates
+
+    commit:
+      author:
+        name: flux-image-updater
+        email: flux-image-updater@users.noreply.github.com
+      messageTemplate: |
+        chore: update site image to the latest release
+
+        {{- range .Changed.Changes }}
+        - {{ .OldValue }} -> {{ .NewValue }}
+        {{- end }}
+
+  update:
+    strategy: Setters
+    path: ./manifests
