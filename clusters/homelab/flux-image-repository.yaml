@@ -4,7 +4,7 @@ metadata:
   name: olab
   namespace: flux-system
 spec:
-  image: registry.naseyro.com/olab
+  image: registry.naseyro.com/site
   interval: 1m
   secretRef:
     name: zot-flux-pull
