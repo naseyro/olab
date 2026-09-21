@@ -54,6 +54,8 @@ jobs:
           context: .
           load: true
           platforms: linux/amd64
+          provenance: false
+          sbom: false
           tags: registry.naseyro.com/site:${{ steps.release.outputs.version }}
 
       - name: Start release container
