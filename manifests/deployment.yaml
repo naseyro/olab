@@ -17,7 +17,7 @@ spec:
       - name: zot-credentials
       containers:
       - name: site
-        image: registry.naseyro.com/site:v0.1.0 # {"$imagepolicy": "flux-system:olab"}
+        image: registry.naseyro.com/site:v0.2.0 # {"$imagepolicy": "flux-system:olab"}
         imagePullPolicy: Always
         ports:
         - containerPort: 80
