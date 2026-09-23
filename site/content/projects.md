@@ -2,10 +2,10 @@
 title: "Projects"
 ---
 
-### [olab / This site!](https://github.com/naseyro/olab)
+### [olab / this site!](https://github.com/naseyro/olab)
 A self-hosted Kubernetes homelab running a containerized Hugo site with kubeadm, Traefik, Cloudflare Tunnel, Flux GitOps, GitHub Actions CI/CD, and a private Zot container registry.
 
-### [minictr](https://github.com/naseyro/minictr)
+### [srunc](https://github.com/naseyro/srunc)
 A container runtime built from scratch in Go, exploring Linux namespaces, cgroups, networking, OverlayFS, OCI images, and the container lifecycle behind Docker.
 
 
