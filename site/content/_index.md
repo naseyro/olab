@@ -5,7 +5,7 @@ type: "home"
 
 # Omar Nasser
 
-Focused on Containers, Kubernetes, distributed systems, and development with Go.
+Focusing on Containers, Kubernetes and development with Go.
 
 ### Technical Interests
 
