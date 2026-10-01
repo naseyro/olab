@@ -1,3 +1,3 @@
 # olab
 
-A local homelab, for learning purposes.
+A distributed homelab, for learning purposes.
