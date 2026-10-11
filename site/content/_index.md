@@ -5,7 +5,7 @@ type: "home"
 
 # Omar Nasser
 
-Focusing on Containers, Kubernetes and development with Go.
+Focusing on Containers, Kubernetes and development with Go, interested in DevOps and SRE.
 
 ### Technical Interests
 
