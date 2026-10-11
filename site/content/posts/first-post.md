@@ -5,3 +5,5 @@ draft: false
 ---
 
 Building my first homelab using my old laptop!
+
+Work in progress for this post!
